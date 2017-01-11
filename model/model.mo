@@ -59,6 +59,8 @@ package MJC
     // Simulation model
     model Simulator
         Robot mjc;
+        input SI.Voltage v_in_left;
+        input SI.Voltage v_in_right;
     initial equation
         mjc.x = 0;
         mjc.y = 0;
@@ -66,8 +68,7 @@ package MJC
         mjc.v = 0;
         mjc.omega = 0;
     equation
-        // Apply inputs (voltage)
-        mjc.v_in_left = -1;
-        mjc.v_in_right = 1;
+        mjc.v_in_right = v_in_right;
+        mjc.v_in_left = v_in_left;
     end Simulator;
 end MJC;
