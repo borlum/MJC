@@ -47,7 +47,7 @@ package MJC
     equation
         motor_l.v_in = v_in_left;
         motor_r.v_in = v_in_right;
-
+        // Dynamics
         M * der(v) = 1/R * (motor_r.tau + motor_r.tau) - v;
         J * der(omega) = L/R * (motor_r.tau - motor_l.tau) - omega;
         // Kinematics
@@ -56,7 +56,7 @@ package MJC
         der(theta) = omega;
     end Robot;
 
-    // Simulation
+    // Simulation model
     model Simulator
         Robot mjc;
     initial equation
@@ -66,7 +66,7 @@ package MJC
         mjc.v = 0;
         mjc.omega = 0;
     equation
-        // Apply inputs -- for now just torque...
+        // Apply inputs (voltage)
         mjc.v_in_left = -1;
         mjc.v_in_right = 1;
     end Simulator;
