@@ -10,8 +10,8 @@ p = {
     'L': 0.20, # Dist. between wheels
     'b': 0.10, # Dist. from center
     'M': 1.10, # Mass
-    'B': 1.00, # Rot. friction
-    'K': 1.00, # Trans. friction
+    'B': 0.1, # Rot. friction
+    'K': 0.1, # Trans. friction
 }
 
 # Calculate inertia (box)
@@ -32,16 +32,10 @@ B = np.matrix([
 
 C = np.matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
-uncontrollableModes = ctrl.analysis.uncontrollable_modes(A,B)
-
 sys = sp.StateSpace(A, B, C)
 
-t = np.linspace(0, 5)
-u = np.ones((2, len(t))).T
-tout, y, x = sp.lsim(sys, u, t)
-
-plt.plot(t, y)
-plt.show()
+# Check if system is controllable (cross fingers!)
+uncontrollableModes = ctrl.analysis.uncontrollable_modes(A,B)
 
 if not uncontrollableModes:
     print('System is controllable.')
@@ -49,7 +43,12 @@ else:
     print('System is uncontrollable. Uncontrollable modes are:')
     print(uncontrollableModes)
 
-# Define our costs:
+
+# Discretize:
+dt = 0.01
+(A, B, C, D, dt) = sp.cont2discrete((sys.A, sys.B, sys.C, sys.D), dt)
+
+# Synthesize LQR
 Q = np.matrix([
     [0, 0, 0],
     [0, 1, 0],
@@ -61,11 +60,25 @@ R = np.matrix([
     [0, 1]
 ])
 
-# Compute the LQR controller
-gain, X, closedLoopEigVals = ctrl.synthesis.controller_lqr(A,B,Q,R)
+# Compute gain
+K, X, closedLoopEigVals = ctrl.synthesis.controller_lqr_discrete_time(
+    A, B, Q, R
+)
 
-print('The computed gain is:')
-print(gain)
+# Adding a reference by feed-forward (dv/dt = 0) NOT WORKING...:
+N = np.matrix([
+    [2 * p['R']],
+    [2 * p['R']]
+])
 
-print('The closed loop eigenvalues are:')
-print(closedLoopEigVals)
+print(N)
+
+x0 = np.matrix([0, 0.5, 0.2]).T
+x_ref = np.matrix([0, 0, 0.2]).T
+x = x0
+x_res = x0
+for k in range(1000):
+    u = -K * x + 0.2 * N
+    print(u)
+    x = A * x + B * u
+    print(x)
