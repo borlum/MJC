@@ -6,6 +6,9 @@ import pyfmi_help as fmi_ex
 
 # Load the FMU
 FMU = fmi.load_fmu('../model/MJC_Simulator.fmu')
+FMU.setup_experiment()
+FMU.initialize()
+print FMU.get_state_space_representation()
 
 Ts = 10
 T_final = 30

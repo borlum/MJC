@@ -6,6 +6,6 @@ paths = 'model.mo'
 
 # Compile an FMU
 pym.compile_fmu(
-    "MJC.Simulator", paths,
+    "MJC.Simulator", paths, version = '2.0',
     compiler_options = {"state_initial_equations": True}
 )

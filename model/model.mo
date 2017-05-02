@@ -48,7 +48,7 @@ package MJC
         motor_l.v_in = v_in_left;
         motor_r.v_in = v_in_right;
         // Dynamics
-        M * der(v) = 1/R * (motor_r.tau + motor_r.tau) - v;
+        M * der(v) = 1/R * (motor_r.tau + motor_l.tau) - v;
         J * der(omega) = L/R * (motor_r.tau - motor_l.tau) - omega;
         // Kinematics
         der(x) = v * cos(theta);
